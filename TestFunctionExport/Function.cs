@@ -57,14 +57,7 @@ public class Functions
                 fills.Append(fill);
                 Fill systemFill = new Fill(); // System fill
                 fills.Append(systemFill);
-                Fill redFill = new Fill
-                {
-                    PatternFill = new PatternFill()
-                    {
-                        ForegroundColor = new ForegroundColor() { Rgb = new HexBinaryValue { Value = "FF0000" } }, // Red Fill
-                        PatternType = PatternValues.Solid
-                    }
-                };
+                Fill redFill = new Fill(new PatternFill(new ForegroundColor() { Rgb = new HexBinaryValue() { Value = "FF0000" } }) { PatternType = PatternValues.Solid }); // Orange fill
                 fills.Append(redFill);
                 Fill orangeFill = new Fill(new PatternFill(new ForegroundColor() { Rgb = new HexBinaryValue() { Value = "FFA500" } }) { PatternType = PatternValues.Solid }); // Orange fill
                 fills.Append(orangeFill);
@@ -78,6 +71,10 @@ public class Functions
                 CellFormats cellFormats = new CellFormats();
                 CellFormat defaultFormat = new CellFormat(); // Default cell format
                 cellFormats.Append(defaultFormat);
+                CellFormat redFormat1 = new CellFormat() { FillId = 2, BorderId = 0, ApplyFill = true }; // Red cell format
+                cellFormats.Append(redFormat1);
+                CellFormat greenFormat1 = new CellFormat() { FillId = 4, BorderId = 0, ApplyFill = true }; // Green cell format
+                cellFormats.Append(greenFormat1);
                 CellFormat orangeFormat = new CellFormat() { FontId = 1, FillId = 3, BorderId = 0, ApplyFill = true, Alignment = new Alignment() { Horizontal = HorizontalAlignmentValues.Center, Vertical = VerticalAlignmentValues.Center } }; // Orange cell format
                 cellFormats.Append(orangeFormat);
                 CellFormat greenFormat = new CellFormat() { FontId = 1, FillId = 4, BorderId = 0, ApplyFill = true, Alignment = new Alignment() { Horizontal = HorizontalAlignmentValues.Center, Vertical = VerticalAlignmentValues.Center } }; // Green cell format
@@ -88,6 +85,10 @@ public class Functions
                 stylesheet.Append(borders);
                 stylesheet.Append(cellFormats);
 
+                uint redFormatIndex = (uint)cellFormats.ChildElements.Count - 2;
+                uint greenFormatIndex = (uint)cellFormats.ChildElements.Count - 1;
+
+
                 stylesPart.Stylesheet = stylesheet;
                 stylesPart.Stylesheet.Save();
                 using (var writer = OpenXmlWriter.Create(worksheetPart))
@@ -97,13 +98,13 @@ public class Functions
 
                     // Write the cell with the value "Trouble Code Old" at A1 and "Trouble Code New" at J1
                     writer.WriteStartElement(new Row());
-                    var cellOld = new Cell { DataType = CellValues.String, CellValue = new CellValue("Trouble Code Old"), StyleIndex = 1 };
+                    var cellOld = new Cell { DataType = CellValues.String, CellValue = new CellValue("Trouble Code Old"), StyleIndex = redFormatIndex };
                     writer.WriteElement(cellOld);
                     for (int i = 1; i <= 8; i++) // Skip cells until J
                     {
                         writer.WriteElement(new Cell { DataType = CellValues.String, CellValue = new CellValue(string.Empty) });
                     }
-                    var cellNew = new Cell { DataType = CellValues.String, CellValue = new CellValue("Trouble Code New"), StyleIndex = 2 };
+                    var cellNew = new Cell { DataType = CellValues.String, CellValue = new CellValue("Trouble Code New"), StyleIndex = greenFormatIndex };
                     writer.WriteElement(cellNew);
                     writer.WriteEndElement(); // End of Row
 
@@ -131,24 +132,34 @@ public class Functions
                     {
                         row++;
                         writer.WriteStartElement(new Row { RowIndex = row });
+                        var oldStyleVrtCodeIndex = item.VrtCodeValueOld == item.VrtCodeValueNew ? (uint?)null : 1U;
+                        var newStyleVrtCodeIndex = item.VrtCodeValueOld == item.VrtCodeValueNew ? (uint?)null : 2U;
+                        var oldStyleVrtCodeDescriptionIndex = item.VrtCodeDescriptionOld == item.VrtCodeDescriptionNew ? (uint?)null : 1U;
+                        var newStyleVrtCodeDescriptionIndex = item.VrtCodeDescriptionOld == item.VrtCodeDescriptionNew ? (uint?)null : 2U;
+                        var oldStyleVfgCodeIndex = item.VfgCodeValueOld == item.VfgCodeValueNew ? (uint?)null : 1U;
+                        var newStyleVfgCodeIndex = item.VrtCodeValueOld == item.VfgCodeValueNew ? (uint?)null : 2U;
+                        var oldStyleVfgCodeDescriptionIndex = item.VfgCodeDescriptionOld == item.VfgCodeDescriptionNew ? (uint?)null : 1U;
+                        var newStyleVfgCodeDescriptionIndex = item.VfgCodeDescriptionOld == item.VfgCodeDescriptionNew ? (uint?)null : 2U;
+                        var oldStyleCtcCodeIndex = item.CtcCodeValueOld == item.CtcCodeValueNew ? (uint?)null : 1U;
+                        var newStyleCtcCodeIndex = item.CtcCodeValueOld == item.CtcCodeValueNew ? (uint?)null : 2U;
+                        var oldStyleCtcCodeDescriptionIndex = item.CtcCodeDescriptionOld == item.CtcCodeDescriptionNew ? (uint?)null : 1U;
+                        var newStyleCtcCodeDescriptionIndex = item.CtcCodeDescriptionOld == item.CtcCodeDescriptionNew ? (uint?)null : 2U;
                         writer.WriteElement(new Cell { DataType = CellValues.String, CellValue = new CellValue(item.VrtCodeValueOld + (item.VfgCodeValueOld != null ? "_" + item.VfgCodeValueOld : string.Empty) + (item.CtcCodeValueOld != null ? "_" + item.CtcCodeValueOld : string.Empty)) });
-                        uint? oldStyleIndex = item.VrtCodeValueOld == item.VrtCodeValueNew ? (uint?)null : 2U;
-                        uint? newStyleIndex = item.VrtCodeValueOld == item.VrtCodeValueNew ? (uint?)null : 3U;
-                        writer.WriteElement(new Cell { DataType = CellValues.String, CellValue = new CellValue(item.VrtCodeValueOld ?? string.Empty), StyleIndex = oldStyleIndex.HasValue ? UInt32Value.FromUInt32(oldStyleIndex.Value) : null });
-                        writer.WriteElement(new Cell { DataType = CellValues.String, CellValue = new CellValue(item.VrtCodeDescriptionOld ?? string.Empty) });
-                        writer.WriteElement(new Cell { DataType = CellValues.String, CellValue = new CellValue(item.VfgCodeValueOld ?? string.Empty) });
-                        writer.WriteElement(new Cell { DataType = CellValues.String, CellValue = new CellValue(item.VfgCodeDescriptionOld ?? string.Empty) });
-                        writer.WriteElement(new Cell { DataType = CellValues.String, CellValue = new CellValue(item.CtcCodeValueOld ?? string.Empty) });
-                        writer.WriteElement(new Cell { DataType = CellValues.String, CellValue = new CellValue(item.CtcCodeDescriptionOld ?? string.Empty) });
+                        writer.WriteElement(new Cell { DataType = CellValues.String, CellValue = new CellValue(item.VrtCodeValueOld ?? string.Empty), StyleIndex = oldStyleVrtCodeIndex });
+                        writer.WriteElement(new Cell { DataType = CellValues.String, CellValue = new CellValue(item.VrtCodeDescriptionOld ?? string.Empty), StyleIndex = oldStyleVrtCodeDescriptionIndex });
+                        writer.WriteElement(new Cell { DataType = CellValues.String, CellValue = new CellValue(item.VfgCodeValueOld ?? string.Empty), StyleIndex = oldStyleVfgCodeIndex });
+                        writer.WriteElement(new Cell { DataType = CellValues.String, CellValue = new CellValue(item.VfgCodeDescriptionOld ?? string.Empty), StyleIndex = oldStyleVfgCodeDescriptionIndex });
+                        writer.WriteElement(new Cell { DataType = CellValues.String, CellValue = new CellValue(item.CtcCodeValueOld ?? string.Empty), StyleIndex = oldStyleCtcCodeIndex });
+                        writer.WriteElement(new Cell { DataType = CellValues.String, CellValue = new CellValue(item.CtcCodeDescriptionOld ?? string.Empty), StyleIndex = oldStyleCtcCodeDescriptionIndex });
                         writer.WriteElement(new Cell { DataType = CellValues.String, CellValue = new CellValue("Note") });
                         writer.WriteElement(new Cell { DataType = CellValues.String, CellValue = new CellValue("") });
                         writer.WriteElement(new Cell { DataType = CellValues.String, CellValue = new CellValue(item.VrtCodeValueNew + (item.VfgCodeValueNew != null ? "_" + item.VfgCodeValueNew : string.Empty) + (item.CtcCodeValueNew != null ? "_" + item.CtcCodeValueNew : string.Empty)) });
-                        writer.WriteElement(new Cell { DataType = CellValues.String, CellValue = new CellValue(item.VrtCodeValueNew ?? string.Empty), StyleIndex =  newStyleIndex.HasValue ? UInt32Value.FromUInt32(newStyleIndex.Value) : null });
-                        writer.WriteElement(new Cell { DataType = CellValues.String, CellValue = new CellValue(item.VrtCodeDescriptionNew ?? string.Empty) });
-                        writer.WriteElement(new Cell { DataType = CellValues.String, CellValue = new CellValue(item.VfgCodeValueNew ?? string.Empty) });
-                        writer.WriteElement(new Cell { DataType = CellValues.String, CellValue = new CellValue(item.VfgCodeDescriptionNew ?? string.Empty) });
-                        writer.WriteElement(new Cell { DataType = CellValues.String, CellValue = new CellValue(item.CtcCodeValueNew ?? string.Empty) });
-                        writer.WriteElement(new Cell { DataType = CellValues.String, CellValue = new CellValue(item.CtcCodeDescriptionNew ?? string.Empty) });
+                        writer.WriteElement(new Cell { DataType = CellValues.String, CellValue = new CellValue(item.VrtCodeValueNew ?? string.Empty), StyleIndex = newStyleVrtCodeIndex });
+                        writer.WriteElement(new Cell { DataType = CellValues.String, CellValue = new CellValue(item.VrtCodeDescriptionNew ?? string.Empty), StyleIndex = newStyleVrtCodeDescriptionIndex });
+                        writer.WriteElement(new Cell { DataType = CellValues.String, CellValue = new CellValue(item.VfgCodeValueNew ?? string.Empty), StyleIndex = newStyleVfgCodeIndex });
+                        writer.WriteElement(new Cell { DataType = CellValues.String, CellValue = new CellValue(item.VfgCodeDescriptionNew ?? string.Empty), StyleIndex = newStyleVfgCodeDescriptionIndex });
+                        writer.WriteElement(new Cell { DataType = CellValues.String, CellValue = new CellValue(item.CtcCodeValueNew ?? string.Empty), StyleIndex = newStyleCtcCodeIndex });
+                        writer.WriteElement(new Cell { DataType = CellValues.String, CellValue = new CellValue(item.CtcCodeDescriptionNew ?? string.Empty), StyleIndex = newStyleCtcCodeDescriptionIndex });
                         writer.WriteEndElement();
                     }
                     writer.WriteEndElement(); // End of SheetData
