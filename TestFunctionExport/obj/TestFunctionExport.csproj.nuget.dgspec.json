@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "D:\\Nobisoft\\Vinfast\\TestFunctionExport\\TestFunctionExport\\TestFunctionExport.csproj": {}
+    "D:\\Nobisoft\\test-function-export\\TestFunctionExport\\TestFunctionExport.csproj": {}
   },
   "projects": {
-    "D:\\Nobisoft\\Vinfast\\TestFunctionExport\\TestFunctionExport\\TestFunctionExport.csproj": {
+    "D:\\Nobisoft\\test-function-export\\TestFunctionExport\\TestFunctionExport.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Nobisoft\\Vinfast\\TestFunctionExport\\TestFunctionExport\\TestFunctionExport.csproj",
+        "projectUniqueName": "D:\\Nobisoft\\test-function-export\\TestFunctionExport\\TestFunctionExport.csproj",
         "projectName": "TestFunctionExport",
-        "projectPath": "D:\\Nobisoft\\Vinfast\\TestFunctionExport\\TestFunctionExport\\TestFunctionExport.csproj",
-        "packagesPath": "C:\\Users\\An\\.nuget\\packages\\",
-        "outputPath": "D:\\Nobisoft\\Vinfast\\TestFunctionExport\\TestFunctionExport\\obj\\",
+        "projectPath": "D:\\Nobisoft\\test-function-export\\TestFunctionExport\\TestFunctionExport.csproj",
+        "packagesPath": "C:\\Users\\Admin\\.nuget\\packages\\",
+        "outputPath": "D:\\Nobisoft\\test-function-export\\TestFunctionExport\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\An\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "C:\\Users\\Admin\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net6.0"
@@ -87,7 +87,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.421\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.419\\RuntimeIdentifierGraph.json"
         }
       }
     }
